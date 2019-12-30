@@ -3,12 +3,9 @@ def swap(arr, i, j):
 
 
 def heapify(arr, n, i):
-    # largest
     largest = i
-    # left child
-    l = 2*i+1
-    # right child
-    r = 2*i+2
+    l = 2*i+1   # left child
+    r = 2*i+2   # right child
 
     if l < n and arr[l] > arr[largest]:
         largest = l
@@ -23,7 +20,6 @@ def heapify(arr, n, i):
 def build_heap(arr, n):
     i = len(arr)//2-1
     while i > -1:
-        # print("[~]<build_heap> i: " + str(i))
         heapify(arr, n, i)
         i -= 1
 
