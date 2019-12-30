@@ -1,6 +1,5 @@
-# some files
-main.py
-*.png
+# Some directories
+testing_pil/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
