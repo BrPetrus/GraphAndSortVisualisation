@@ -1,40 +1,52 @@
-def swap(arr, i, j):
-    arr[i], arr[j] = arr[j], arr[i]
+import threading
 
 
-def heapify(arr, n, i):
-    largest = i
-    l = 2*i+1   # left child
-    r = 2*i+2   # right child
+class HeapSort(threading.Thread):
+    def __init__(self, threadID, name, canvas, array):
+        threading.Thread.__init__(self)
+        self.threadID = threadID
+        self.name = name
+        self.canvas = canvas
+        self.array = array
 
-    if l < n and arr[l] > arr[largest]:
-        largest = l
-    if r < n and arr[r] > arr[largest]:
-        largest = r
+    def run(self):
+        pass
 
-    if largest != i:
-        swap(arr, i, largest)
-        heapify(arr, n, largest)
+    def swap(self, i, j):
+        self.array[i], self.array[j] = self.array[j], self.array[i]
 
+    def heapify(self, n, i):
+        largest = i
+        left = 2*i+1   # left child
+        right = 2*i+2   # right child
 
-def build_heap(arr, n):
-    i = len(arr)//2-1
-    while i > -1:
-        heapify(arr, n, i)
-        i -= 1
+        if left < n and self.array[left] > self.array[largest]:
+            largest = left
+        if right < n and self.array[right] > self.array[largest]:
+            largest = right
 
+        if largest != i:
+            self.swap(i, largest)
+            self.heapify(n, largest)
 
-def heapsort(arr):
-    # build a max-heap
-    build_heap(arr, len(arr))
-    n = len(arr)
-    for i in range(n-1, -1, -1):
-        swap(arr, 0, i)
-        heapify(arr, i, 0)
+    def build_heap(self, n):
+        i = len(self.array)//2-1
+        while i > -1:
+            self.heapify(n, i)
+            i -= 1
+
+    def heapsort(self):
+        # build a max-heap
+        self.build_heap(len(self.array))
+        n = len(self.array)
+        for i in range(n-1, -1, -1):
+            self.swap(0, i)
+            self.heapify(i, 0)
 
 
 if __name__ == "__main__":
     arr = [1, 4, 2, 5, 3]
     print(arr)
-    heapsort(arr)
+    hs = HeapSort(0, 'Heapsort', None, arr)
+    hs.heapsort()
     print(arr)
