@@ -1,18 +1,13 @@
-import threading
+import queue
 
 
-class HeapSort(threading.Thread):
-    def __init__(self, threadID, name, canvas, array):
-        threading.Thread.__init__(self)
-        self.threadID = threadID
-        self.name = name
-        self.canvas = canvas
+class HeapSort():
+    def __init__(self, array):
         self.array = array
-
-    def run(self):
-        pass
+        self.steps = queue.Queue()
 
     def swap(self, i, j):
+        self.steps.put((i, j))
         self.array[i], self.array[j] = self.array[j], self.array[i]
 
     def heapify(self, n, i):
@@ -42,11 +37,12 @@ class HeapSort(threading.Thread):
         for i in range(n-1, -1, -1):
             self.swap(0, i)
             self.heapify(i, 0)
+        return self.steps  # returns the steps
 
 
 if __name__ == "__main__":
     arr = [1, 4, 2, 5, 3]
     print(arr)
-    hs = HeapSort(0, 'Heapsort', None, arr)
-    hs.heapsort()
+    hs = HeapSort(arr)
+    print(hs.heapsort())
     print(arr)
