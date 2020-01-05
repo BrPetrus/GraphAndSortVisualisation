@@ -3,7 +3,7 @@ import queue
 
 class HeapSort():
     def __init__(self, array):
-        self.array = array
+        self.array = array.copy()
         self.steps = queue.Queue()
 
     def swap(self, i, j):

@@ -1,38 +1,52 @@
-import threading
 import random
+import tkinter
+import time
 
 
 class VisualiseSort():
-    def __init__(self, sorting_algorithm_class):
-        self.threadLock = threading.Lock()
+    def __init__(self, sorting_algorithm_class, canvas, num=100, dimensions=(400, 400)):
         self.sorting_algorithm_class = sorting_algorithm_class
+        self.num = num
+        self.dimensions = dimensions
+        self.canvas = canvas
 
         # Generate array
-        self.arr = [i for i in range(10)]
+        self.arr = [i for i in range(num)]
 
-        # Shuffle array
-        N = 5
-        for i in range(N):
-            j, k = random.randint(0, 9), random.randint(0, 9)
+        # Shuffle arr
+        N = len(self.arr)*100
+        for _ in range(N):
+            j, k = random.randint(0, num-1), random.randint(0, num-1)
             self.arr[j], self.arr[k] = self.arr[k], self.arr[j]
 
-    def run(self):
+    def start(self):
         # Run sort function
-        self.thread = self.sorting_algorithm_class(self.threadLock, self.arr)
-        self.thread.start()
-        print(type(self.thread))
-
-        while self.thread.isAlive():
-            # self.threadLock.acquire()
-            # self.thread.join()
-            self.threadLock.acquire()
-            print('Drawin')
-            self.thread.release()
-            print(self.thread.array)
-
-
+        self.sorting_algorithm_class = self.sorting_algorithm_class(self.arr)
+        self.steps = self.sorting_algorithm_class.heapsort()
         print('[~] Done sorting')
-        # print(self.arr)
+        self.draw()
+        self.canvas.after(5000, self.run)
+
+    def run(self):
+        if self.steps.empty() is False:
+            step = self.steps.get()
+            self.arr[step[0]], self.arr[step[1]] = self.arr[step[1]], self.arr[step[0]]
+            self.draw()
+            self.canvas.after(5, self.run)
 
     def draw(self):
-        pass
+        self.canvas.delete('all')
+
+        # min max values
+        max = self.num-1
+        min = 0
+
+        # width of each column
+        width = self.dimensions[0]//self.num
+        k = self.dimensions[1]/max
+
+        # draw columns
+        x = 0
+        for value in self.arr:
+            self.canvas.create_rectangle(x, self.dimensions[1], x+width, self.dimensions[1]-(k*value), fill='white', width=0)
+            x += width
