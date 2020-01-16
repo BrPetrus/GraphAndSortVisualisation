@@ -1,14 +1,12 @@
 import random
 import tkinter
-import time
 
 
 class VisualiseSort():
-    def __init__(self, sorting_algorithm_class, canvas, num=100, dimensions=(400, 400)):
-        self.sorting_algorithm_class = sorting_algorithm_class
+    def __init__(self, sort_classes, sort_classes_names, root, num=100, dimensions=(1024, 768)):
         self.num = num
         self.dimensions = dimensions
-        self.canvas = canvas
+        self.root = root
 
         # Generate array
         self.arr = [i for i in range(num)]
@@ -19,34 +17,86 @@ class VisualiseSort():
             j, k = random.randint(0, num-1), random.randint(0, num-1)
             self.arr[j], self.arr[k] = self.arr[k], self.arr[j]
 
+        # Instantiate the classes and create an array copy for each sorting object
+        self.sort_objects = []
+        self.arrays = []
+        for i, _class in enumerate(sort_classes):
+            self.sort_objects.append([_class(self.arr), sort_classes_names[i]])
+            self.arrays.append(self.arr.copy())
+
+        # Create a sepparate canvas for each sorting algorithm
+        self.frame = tkinter.Frame(self.root, width=dimensions[0], height=dimensions[1])
+        # Height and width of each canvas
+        self.canvas_height = (self.dimensions[1]-50)/len(sort_classes)
+        self.canvas_width = (self.dimensions[0])
+        self.frame.grid(row=0, column=0, sticky='n')
+        self.canvases = []
+        for i in range(len(sort_classes)):
+            canvas = tkinter.Canvas(self.frame, width=self.canvas_width,
+                                    height=self.canvas_height, bg='black')
+            canvas.grid(row=i, column=0, sticky='n')
+            self.canvases.append(canvas)
+
+        self.last_selected = [None]*len(sort_classes)
+
     def start(self):
-        # Run sort function
-        self.sorting_algorithm_class = self.sorting_algorithm_class(self.arr)
-        self.steps = self.sorting_algorithm_class.heapsort()
+        # Run sort functions and get steps
+        self.steps = []
+        for obj, name in self.sort_objects:
+            self.steps.append(obj.sort())
         print('[~] Done sorting')
+        # Draw all canvases
         self.draw()
-        self.canvas.after(5000, self.run)
+        # Start animation
+        self.root.after(3000, self.run)
+
+        # is the frame destroyed?
+        self.is_frame_destroyed = False
 
     def run(self):
-        if self.steps.empty() is False:
-            step = self.steps.get()
-            self.arr[step[0]], self.arr[step[1]] = self.arr[step[1]], self.arr[step[0]]
+        if not self.is_frame_destroyed:
+            run = False
+            for i in range(len(self.sort_objects)):
+                # If there are still unprocessed steps
+                if self.steps[i].empty() is False:
+                    swap = self.steps[i].get()
+                    # Perform swap
+                    self.arrays[i][swap[0]], self.arrays[i][swap[1]] = self.arrays[i][swap[1]], self.arrays[i][swap[0]]
+                    self.last_selected[i] = [swap[0], swap[1]]
+                    run = True
             self.draw()
-            self.canvas.after(5, self.run)
+            self.last_selected = [None]*len(self.sort_objects)
+            if run:
+                self.root.after(10, self.run)
 
     def draw(self):
-        self.canvas.delete('all')
+        # For each canvas
+        for i, canvas in enumerate(self.canvases):
+            canvas.delete('all')
 
-        # min max values
-        max = self.num-1
-        min = 0
+            # Maximum value
+            max = self.num-1
 
-        # width of each column
-        width = self.dimensions[0]//self.num
-        k = self.dimensions[1]/max
+            # width of each column
+            width = self.canvas_width/self.num
+            k = (self.canvas_height-15)/max
 
-        # draw columns
-        x = 0
-        for value in self.arr:
-            self.canvas.create_rectangle(x, self.dimensions[1], x+width, self.dimensions[1]-(k*value), fill='white', width=0)
-            x += width
+            # draw columns
+            x = 0
+            for j, value in enumerate(self.arrays[i]):
+                if self.last_selected is not None and self.last_selected[i] is not None and j in self.last_selected[i]:
+                    fill = 'yellow'
+                else:
+                    fill = 'white'
+                canvas.create_rectangle(x, self.canvas_height,
+                                        x+width,
+                                        self.canvas_height-(k*value),
+                                        fill=fill, width=2)
+                x += width
+
+            # name of the algorthm
+            canvas.create_text(10, 5, text=self.sort_objects[i][1], font='Arial', anchor='nw', fill='gray')
+
+    def removethis(self):
+        self.is_frame_destroyed = True
+        self.frame.destroy()

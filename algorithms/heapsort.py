@@ -1,14 +1,9 @@
-import queue
+from . import sort
 
 
-class HeapSort():
+class HeapSort(sort.Sort):
     def __init__(self, array):
-        self.array = array.copy()
-        self.steps = queue.Queue()
-
-    def swap(self, i, j):
-        self.steps.put((i, j))
-        self.array[i], self.array[j] = self.array[j], self.array[i]
+        super().__init__(array)
 
     def heapify(self, n, i):
         largest = i
@@ -24,15 +19,15 @@ class HeapSort():
             self.swap(i, largest)
             self.heapify(n, largest)
 
-    def build_heap(self, n):
+    def _build_heap(self, n):
         i = len(self.array)//2-1
         while i > -1:
             self.heapify(n, i)
             i -= 1
 
-    def heapsort(self):
+    def sort(self):
         # build a max-heap
-        self.build_heap(len(self.array))
+        self._build_heap(len(self.array))
         n = len(self.array)
         for i in range(n-1, -1, -1):
             self.swap(0, i)
@@ -44,5 +39,5 @@ if __name__ == "__main__":
     arr = [1, 4, 2, 5, 3]
     print(arr)
     hs = HeapSort(arr)
-    print(hs.heapsort())
-    print(arr)
+    print(hs.sort())
+    print(hs.array)
