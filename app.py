@@ -11,6 +11,7 @@ class App():
 
         # Menu
         self.menu_frame = tkinter.Frame(self.root, width=dimensions[0], height=dimensions[1])
+        self.menu_frame.option_add('*Font', 'Courier 20')
         # Place menu
         self.menu_frame.grid(row=0, column=0)
 
@@ -34,22 +35,37 @@ class App():
         box_insertionsort = tkinter.Checkbutton(self.menu_frame, text='Insertion sort', onvalue='Insertion sort', offvalue='', variable=var_insertionsort)
         self.checkbuttons.append([var_insertionsort, box_insertionsort])
 
+        # Button to get back to menu
+        self.button_to_menu = tkinter.Button(text='Back', command=self.back_to_menu)
         # Delay slider
-        self.delay_scale = tkinter.Scale(self.menu_frame, from_=1, to=100, orient='horizontal')
+        self.delay_scale = tkinter.Scale(self.menu_frame, from_=1, to=300, orient='horizontal')
         self.delay_scale.set(20)
 
         # Start button
         self.startbutton = tkinter.Button(self.menu_frame, text='Start', command=self.start)
 
-        print(self.checkbuttons[:][0])
+        # Title
+        self.label_title = tkinter.Label(self.menu_frame, text='Sort visualisation', font='Arial 40 bold')
+
         # Place stuff inside the frame
-        i = 0
+        self.label_title.grid(row=0, column=0)
+        i = 1
         for sort_stuff in self.checkbuttons[:]:
             sort_stuff[1].grid(row=i, column=0, sticky='w')
             i += 1
+        tkinter.Label(self.menu_frame, text='Delay in ms', font='Arial 15').grid(row=i, column=0)
+        i += 1
         self.delay_scale.grid(row=i, column=0)
         i += 1
         self.startbutton.grid(row=i, column=0)
 
     def start(self):
-        pass
+        self.menu_frame.grid_forget()
+        self.button_to_menu.grid(row=1, column=0)
+        self.vs = visualise_sort.VisualiseSort([quicksort.Quicksort, quicksort.Quicksort_random, heapsort.HeapSort, insertionsort.InsertionSort], ['Quicksort', 'Random pivot quicksort', 'Heapsort', 'Insertionsort'], self.root, 100, [1024, 700], int(self.delay_scale.get()))
+        self.vs.start()
+
+    def back_to_menu(self):
+        self.vs.removethis() 
+        self.button_to_menu.grid_forget()
+        self.menu_frame.grid()

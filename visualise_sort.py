@@ -3,10 +3,11 @@ import tkinter
 
 
 class VisualiseSort():
-    def __init__(self, sort_classes, sort_classes_names, root, num=100, dimensions=(1024, 768)):
+    def __init__(self, sort_classes, sort_classes_names, root, num, dimensions, delay):
         self.num = num
         self.dimensions = dimensions
         self.root = root
+        self.delay = delay
 
         # Generate array
         self.arr = [i for i in range(num)]
@@ -67,7 +68,7 @@ class VisualiseSort():
             self.draw()
             self.last_selected = [None]*len(self.sort_objects)
             if run:
-                self.root.after(10, self.run)
+                self.root.after(self.delay, self.run)
 
     def draw(self):
         # For each canvas
