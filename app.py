@@ -28,7 +28,7 @@ class App():
         self.checkbuttons.append([var_quicksort, box_quicksort])
         # Quicksort with random pivot
         var_quicksort_rand = tkinter.StringVar()
-        box_quicksort_rand = tkinter.Checkbutton(self.menu_frame, text='Quicksort with random pivot', offvalue='', variable=var_quicksort_rand)
+        box_quicksort_rand = tkinter.Checkbutton(self.menu_frame, text='Quicksort with random pivot', onvalue='Quicksort with random pivot', offvalue='', variable=var_quicksort_rand)
         self.checkbuttons.append([var_quicksort_rand, box_quicksort_rand])
         # Inserion sort
         var_insertionsort = tkinter.StringVar()
@@ -62,10 +62,23 @@ class App():
     def start(self):
         self.menu_frame.grid_forget()
         self.button_to_menu.grid(row=1, column=0)
-        self.vs = visualise_sort.VisualiseSort([quicksort.Quicksort, quicksort.Quicksort_random, heapsort.HeapSort, insertionsort.InsertionSort], ['Quicksort', 'Random pivot quicksort', 'Heapsort', 'Insertionsort'], self.root, 100, [1024, 700], int(self.delay_scale.get()))
+
+        algs = {'Quicksort': quicksort.Quicksort, 'Heapsort': heapsort.HeapSort, 'Insertion sort': insertionsort.InsertionSort, 'Quicksort with random pivot': quicksort.Quicksort_random}
+
+        # Determine which algoritms were selected
+        algs_list = []
+        names_list = []
+        for var, checkbox in self.checkbuttons:
+            print(var.get())
+            value = var.get()
+            if value in algs:
+                algs_list.append(algs[value])
+                names_list.append(value)
+
+        self.vs = visualise_sort.VisualiseSort(algs_list, names_list, self.root, 100, [1024, 700], int(self.delay_scale.get()))
         self.vs.start()
 
     def back_to_menu(self):
-        self.vs.removethis() 
+        self.vs.removethis()
         self.button_to_menu.grid_forget()
         self.menu_frame.grid()
