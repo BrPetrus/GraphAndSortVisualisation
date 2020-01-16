@@ -40,6 +40,9 @@ class App():
         # Delay slider
         self.delay_scale = tkinter.Scale(self.menu_frame, from_=1, to=300, orient='horizontal')
         self.delay_scale.set(20)
+        # Number of values
+        self.amount_scale = tkinter.Scale(self.menu_frame, from_=10, to=300, orient='horizontal')
+        self.amount_scale.set(100)
 
         # Start button
         self.startbutton = tkinter.Button(self.menu_frame, text='Start', command=self.start)
@@ -57,26 +60,31 @@ class App():
         i += 1
         self.delay_scale.grid(row=i, column=0)
         i += 1
+        tkinter.Label(self.menu_frame, text='Amount of numbers', font='Arial 15').grid(row=i, column=0)
+        i += 1
+        self.amount_scale.grid(row=i, column=0)
+        i += 1
         self.startbutton.grid(row=i, column=0)
 
     def start(self):
-        self.menu_frame.grid_forget()
-        self.button_to_menu.grid(row=1, column=0)
-
+        
         algs = {'Quicksort': quicksort.Quicksort, 'Heapsort': heapsort.HeapSort, 'Insertion sort': insertionsort.InsertionSort, 'Quicksort with random pivot': quicksort.Quicksort_random}
 
         # Determine which algoritms were selected
         algs_list = []
         names_list = []
         for var, checkbox in self.checkbuttons:
-            print(var.get())
             value = var.get()
             if value in algs:
                 algs_list.append(algs[value])
                 names_list.append(value)
 
-        self.vs = visualise_sort.VisualiseSort(algs_list, names_list, self.root, 100, [1024, 700], int(self.delay_scale.get()))
-        self.vs.start()
+        if len(algs_list) > 0:
+            self.menu_frame.grid_forget()
+            self.button_to_menu.grid(row=1, column=0)
+
+            self.vs = visualise_sort.VisualiseSort(algs_list, names_list, self.root, int(self.amount_scale.get()), [1024, 700], int(self.delay_scale.get()))
+            self.vs.start()
 
     def back_to_menu(self):
         self.vs.removethis()
