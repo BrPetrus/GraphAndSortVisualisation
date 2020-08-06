@@ -1,38 +1,49 @@
 import random
+from . import sort
 
 
-def quicksort(arr, p, r, rand=False):
-    if p < r:
-        if rand:
-            q = partition_rand(arr, p, r)
-        else:
-            q = partition(arr, p, r)    # partition
-        quicksort(arr, p, q-1)      # sort left
-        quicksort(arr, q+1, r)      # sort right
+class Quicksort(sort.Sort):
+    def __init__(self, array):
+        super().__init__(array)
+
+    def sort(self):
+        self.quicksort(0, len(self.array)-1)
+        return self.steps
+
+    def quicksort(self, p, r):
+        if p < r:
+            q = self.partition(p, r)    # partition
+            self.quicksort(p, q-1)      # sort left
+            self.quicksort(q+1, r)      # sort right
+
+    def partition(self, p, r):
+        x = self.array[r]  # pivot's value
+        i = p-1
+        for j in range(p, r):
+            if self.array[j] <= x:
+                i += 1
+                self.swap(i, j)
+        self.swap(i+1, r)
+        return i+1
 
 
-def partition(arr, p, r):
-    x = arr[r]  # pivot's value
-    i = p-1
-    for j in range(p, r):
-        if arr[j] <= x:
-            i += 1
-            arr[i], arr[j] = arr[j], arr[i]
-    arr[i+1], arr[r] = arr[r], arr[i+1]  # put pivot into the correct position
-    return i+1
+class Quicksort_random(Quicksort):
+    def __init__(self, array):
+        super().__init__(array)
 
-
-def partition_rand(arr, p, r):
-    piv = random.randrange(p, r)  # choose pivot randomly
-    arr[piv], arr[r] = arr[r], arr[piv]  # exchange with the last element
-    x = arr[r]  # pivot's value
-    i = p-1
-    for j in range(p, r):
-        if arr[j] <= x:
-            i += 1
-            arr[i], arr[j] = arr[j], arr[i]
-    arr[i+1], arr[r] = arr[r], arr[i+1]  # put pivot into the correct position
-    return i+1
+    def partition(self, p, r):
+        piv = random.randrange(p, r)  # choose pivot randomly
+        # exchange with the last element
+        self.swap(piv, r)
+        x = self.array[r]  # pivot's value
+        i = p-1
+        for j in range(p, r):
+            if self.array[j] <= x:
+                i += 1
+                self.swap(i, j)
+        # put pivot into the correct position
+        self.swap(i+1, r)
+        return i+1
 
 
 if __name__ == "__main__":

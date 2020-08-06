@@ -1,5 +1,7 @@
 # Some directories
 testing_pil/
+.vim
+.vscode
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
